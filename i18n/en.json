@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "solution": "Solution",
+    "problem": "Problem",
+    "product": "Product",
+    "contact": "Contact",
+    "cta": "Request a demo"
+  },
+  "hero": {
+    "title": "The guardian of Senegalese livestock",
+    "author": "By Abdoulaye Ly",
+    "description": "GETT GI is a livestock tracking, security, and identification solution built for the realities of Senegal.",
+    "cta_demo": "Request a demo",
+    "cta_contact": "Talk to the team"
+  }
+}
