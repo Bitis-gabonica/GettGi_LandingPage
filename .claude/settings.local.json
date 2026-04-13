@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm init:*)",
+      "Bash(where npm:*)",
+      "Bash(cmd.exe /c \"where npm\")",
+      "Bash(cmd.exe:*)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/nodejs:/c/Users/theab/AppData/Roaming/npm\")",
+      "Read(//c/Program Files/**)",
+      "Read(//mnt/c/Program Files/**)",
+      "Bash(powershell.exe -Command \"Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell.exe -Command \"Get-Command npm -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell.exe -Command \"where.exe node\")",
+      "Bash(powershell.exe -Command \"where.exe npm\")",
+      "Bash(powershell.exe -Command \"where.exe pnpm\")",
+      "Bash(powershell.exe -Command \"where.exe bun\")",
+      "Bash(powershell.exe:*)"
+    ]
+  }
+}
