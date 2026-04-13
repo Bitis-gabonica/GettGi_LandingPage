@@ -7,7 +7,8 @@
     "cta": "Demander une démo"
   },
   "hero": {
-    "title": "Le gardien du bétail sénégalais",
+    "subtitle": "le gardien du bétail sénégalais",
+    "title": "GETT GI",
     "author": "Par Abdoulaye Ly",
     "description": "GETT GI est une solution de localisation, de sécurisation et d'identification du bétail conçue pour les réalités du terrain au Sénégal.",
     "cta_demo": "Demander une démo",
