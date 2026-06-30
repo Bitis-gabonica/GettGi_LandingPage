@@ -71,6 +71,11 @@ body { font-family: 'Inter', sans-serif; }
 #mainNav.is-condensed .nav-links,
 #mainNav.is-condensed .nav-cta { display: none; }
 #mainNav.is-condensed #menuToggle { display: block; }
+
+/* Language switcher */
+.lang-btn { color: inherit; font: inherit; letter-spacing: inherit; cursor: pointer; background: none; border: 0; padding: 0; line-height: 1; opacity: 0.4; transition: opacity .3s; }
+.lang-btn:hover { opacity: 0.75; }
+.lang-btn.is-active { opacity: 1; }
 </style>
 </head>
 <body class="bg-[#111111] text-[#1a1a1a] antialiased selection:bg-[#1a1a1a] selection:text-white overflow-x-hidden">
@@ -89,17 +94,26 @@ body { font-family: 'Inter', sans-serif; }
             <a href="#impact" class="hover:opacity-100 transition-opacity">Impact</a>
         </div>
 
-        <div class="nav-cta hidden items-center gap-4 md:flex">
-            <a href="#footer" class="flex items-center gap-2 rounded-full border px-5 py-2 text-xs font-manrope font-extralight uppercase tracking-wider transition-all hover:scale-105" style="border-color: rgba(255,255,255,0.2);">
-                Contactez-nous
-                <iconify-icon icon="solar:arrow-right-up-linear" class="text-sm"></iconify-icon>
-            </a>
-        </div>
+        <div class="flex items-center gap-4 md:gap-6">
+            <div class="nav-cta hidden items-center gap-4 md:flex">
+                <a href="#footer" class="flex items-center gap-2 rounded-full border px-5 py-2 text-xs font-manrope font-extralight uppercase tracking-wider transition-all hover:scale-105" style="border-color: rgba(255,255,255,0.2);">
+                    Contactez-nous
+                    <iconify-icon icon="solar:arrow-right-up-linear" class="text-sm"></iconify-icon>
+                </a>
+            </div>
 
-        <button id="menuToggle" class="md:hidden z-50 relative">
-            <iconify-icon id="menuIconOpen" icon="solar:hamburger-menu-linear" class="text-4xl"></iconify-icon>
-            <iconify-icon id="menuIconClose" icon="ph:x-thin" class="text-5xl hidden"></iconify-icon>
-        </button>
+            <!-- Language switcher (always visible, incl. condensed/burger mode) -->
+            <div class="nav-lang flex items-center gap-1.5 text-xs font-manrope font-light uppercase tracking-wider" aria-label="Language / Langue">
+                <button type="button" data-lang="fr" class="lang-btn">FR</button>
+                <span class="opacity-30">/</span>
+                <button type="button" data-lang="en" class="lang-btn">EN</button>
+            </div>
+
+            <button id="menuToggle" class="md:hidden z-50 relative">
+                <iconify-icon id="menuIconOpen" icon="solar:hamburger-menu-linear" class="text-4xl"></iconify-icon>
+                <iconify-icon id="menuIconClose" icon="ph:x-thin" class="text-5xl hidden"></iconify-icon>
+            </button>
+        </div>
     </nav>
 
     <!-- Mobile fullscreen menu -->
@@ -113,6 +127,13 @@ body { font-family: 'Inter', sans-serif; }
             Contactez-nous
             <iconify-icon icon="solar:arrow-right-up-linear" class="text-sm"></iconify-icon>
         </a>
+
+        <!-- Language switcher -->
+        <div class="nav-lang mt-6 flex items-center gap-3 text-base font-manrope font-light uppercase tracking-wider text-white">
+            <button type="button" data-lang="fr" class="lang-btn">FR</button>
+            <span class="opacity-30">/</span>
+            <button type="button" data-lang="en" class="lang-btn">EN</button>
+        </div>
 
         <!-- Coordonnées -->
         <div class="mt-8 flex flex-col items-center gap-3 text-base font-manrope font-light text-white/55">
@@ -1548,6 +1569,262 @@ body { font-family: 'Inter', sans-serif; }
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
+    /* ============================================================
+       i18n — FR (source) / EN dictionary. Keys are the normalized
+       French text-node strings; only text nodes are swapped, so all
+       markup, line breaks, SVG and animations stay intact.
+       ============================================================ */
+    const LANG_KEY = 'gettgi-lang';
+    const TITLE_EN = 'GETT GI, smart tracking of Senegalese livestock';
+    const DESC_EN  = 'IoT platform for smart tracking, location and identification of livestock, designed for Senegal.';
+
+    const I18N_EN = {
+        // Nav
+        "Problème": "Problem",
+        "Produit": "Product",
+        "Pour qui": "Who it's for",
+        "Contactez-nous": "Contact us",
+        // Hero
+        "L'infrastructure numérique": "The digital infrastructure",
+        "du bétail en Afrique": "for Africa's livestock",
+        "Nous donnons à chaque animal une identité numérique unique : des troupeaux protégés, traçables et bancables.": "We give every animal a unique digital identity: herds that are protected, traceable and bankable.",
+        // Problème
+        "Un secteur vital,": "A vital sector,",
+        "encore mal outillé.": "still poorly equipped.",
+        "Au Sénégal, l'élevage fait vivre des millions de personnes. Pourtant, faute d'identité fiable des animaux et d'outils adaptés, les éleveurs restent largement exclus du crédit et de l'assurance, et exposés au vol.": "In Senegal, livestock farming supports millions of people. Yet, without reliable animal identity and suitable tools, herders remain largely shut out of credit and insurance, and exposed to theft.",
+        "Source FAO Sénégal": "Source: FAO Senegal",
+        "Personnes vivent de l'élevage (environ 350 000 ménages)": "People depend on livestock farming (around 350,000 households)",
+        "Des adultes seulement sont bancarisés (2023)": "Of adults have a bank account (2023)",
+        "Taux de pénétration de l'assurance": "Insurance penetration rate",
+        "Perdus chaque année à cause du vol de bétail": "Lost every year to livestock theft",
+        // Défis
+        "// Les défis du terrain": "// Challenges on the ground",
+        "Des défis réels,": "Real challenges,",
+        "au quotidien.": "every day.",
+        "Entre une identification encore partielle, un suivi difficile en mobilité, des données dispersées et un accès limité au financement, les éleveurs manquent d'outils pour sécuriser et valoriser leur cheptel.": "With identification still patchy, tracking difficult on the move, data scattered and financing hard to access, herders lack the tools to secure their herds and unlock their value.",
+        "Identification et traçabilité limitées": "Limited identification and traceability",
+        "La plupart des animaux n'ont pas d'identité claire et vérifiable. La traçabilité, la preuve de propriété et le suivi administratif en deviennent difficiles.": "Most animals have no clear, verifiable identity. Traceability, proof of ownership and administrative tracking all become difficult.",
+        "Visibilité et sécurité du troupeau": "Herd visibility and security",
+        "Sur de grandes zones et en transhumance, il est difficile de savoir où se trouvent les animaux, de réagir vite en cas d'écart et de se prémunir contre le vol.": "Across vast areas and during transhumance, it is hard to know where the animals are, to react quickly when one strays and to guard against theft.",
+        "Données peu structurées": "Poorly structured data",
+        "Faute d'historique numérique accessible, le suivi sanitaire et la gestion reposent encore sur des informations éparses, incomplètes ou difficiles à retrouver.": "Without an accessible digital history, health monitoring and management still rely on scattered, incomplete information that is hard to retrieve.",
+        "Accès au financement restreint": "Limited access to financing",
+        "Sans identité ni historique exploitables, les animaux peinent à être reconnus comme des actifs, ce qui éloigne les éleveurs du crédit et de l'assurance.": "Without usable identity or history, animals struggle to be recognized as assets, which keeps herders away from credit and insurance.",
+        // Solution
+        "// LA SOLUTION": "// THE SOLUTION",
+        "GETT GI relie identité,": "GETT GI connects identity,",
+        "traçabilité et financement": "traceability and financing",
+        "Identité": "Identity",
+        "Un identifiant unique et vérifiable pour chaque animal (QR code ou puce RFID).": "A unique, verifiable identifier for every animal (QR code or RFID chip).",
+        "Traçabilité et sécurité": "Traceability and security",
+        "Suivi du troupeau, anti-vol et localisation grâce à un collier connecté (GPS + LoRa).": "Herd tracking, anti-theft and location through a connected collar (GPS + LoRa).",
+        "Financement": "Financing",
+        "Un animal identifié devient un actif bancable, qui ouvre l'accès au crédit et à l'assurance.": "An identified animal becomes a bankable asset that opens access to credit and insurance.",
+        // Comment ça marche
+        "// COMMENT ÇA MARCHE": "// HOW IT WORKS",
+        "De l'animal au financement,": "From animal to financing,",
+        "une chaîne connectée.": "a connected chain.",
+        "Le matériel équipe l'animal, les données remontent à l'éleveur, la coopérative supervise l'ensemble, et le financement devient possible.": "The animal is fitted with the hardware, the data flows back to the herder, the cooperative oversees it all, and financing becomes possible.",
+        "On équipe l'animal": "We equip the animal",
+        "Identité unique double (puce RFID et QR code). Le troupeau est doté d'un collier connecté GPS + LoRa.": "A unique dual identity (RFID chip and QR code). The herd is fitted with a connected GPS + LoRa collar.",
+        "Les données remontent": "The data flows back",
+        "Le matériel communique avec l'application : identité, position et alertes anti-vol, même hors connexion.": "The hardware communicates with the app: identity, location and anti-theft alerts, even offline.",
+        "La coop. supervise": "The cooperative oversees",
+        "Chaque coopérative est connectée à ses éleveurs via un tableau de bord : traçabilité et gestion centralisée.": "Each cooperative is connected to its herders through a dashboard: traceability and centralized management.",
+        "Le financement": "Financing",
+        "L'animal devient un actif reconnu. GETT GI relie l'éleveur aux banques et assureurs pour accéder au crédit.": "The animal becomes a recognized asset. GETT GI connects the herder to banks and insurers to access credit.",
+        "Chaque animal reçoit une identité unique et double : une puce RFID sous-cutanée et un QR code. Le troupeau est doté d'un collier connecté (GPS + LoRa).": "Each animal receives a unique, dual identity: a subcutaneous RFID chip and a QR code. The herd is fitted with a connected collar (GPS + LoRa).",
+        "La puce, le QR code et le collier communiquent avec l'application de l'éleveur : identité, position, alertes de vol, avec synchronisation dès qu'un réseau est disponible.": "The chip, the QR code and the collar communicate with the herder's app: identity, location and theft alerts, syncing as soon as a network is available.",
+        "Chaque coopérative est connectée à l'ensemble de ses éleveurs via un tableau de bord : vue globale, traçabilité et gestion centralisée.": "Each cooperative is connected to all of its herders through a dashboard: a global view, traceability and centralized management.",
+        // Produit
+        "// LE PRODUIT": "// THE PRODUCT",
+        "Une infrastructure complète,": "A complete infrastructure,",
+        "du terrain au financement": "from the field to financing",
+        "GETT GI réunit en une seule plateforme tout ce qu'il faut pour identifier, suivre, protéger et valoriser un cheptel. Trois briques connectées entre elles : le matériel d'identité et de sécurité, l'application de l'éleveur et le tableau de bord des coopératives.": "GETT GI brings together in a single platform everything needed to identify, track, protect and add value to a herd. Three building blocks connected to one another: the identity and security hardware, the herder app and the cooperatives' dashboard.",
+        "(puce RFID + QR code) : une identité unique et double pour chaque animal.": "(RFID chip + QR code): a unique, dual identity for every animal.",
+        "Collier connecté": "Connected collar",
+        "(GPS + LoRa) : localisation et anti-vol au niveau du troupeau.": "(GPS + LoRa): location and anti-theft at herd level.",
+        "Application éleveur": "Herder app",
+        "La gestion du cheptel au quotidien, même hors connexion.": "Day-to-day herd management, even offline.",
+        "Tableau de bord": "Dashboard",
+        "Supervision de tous les éleveurs et traçabilité pour la coopérative.": "Oversight of all herders and traceability for the cooperative.",
+        "// Pensé pour l'utilisateur": "// Built for the user",
+        "Une IA qui parle vos langues.": "An AI that speaks your languages.",
+        "Chaque écran, chaque alerte et chaque réponse sont d'abord conçus pour l'éleveur. Un assistant intelligent en langues locales permet d'utiliser GETT GI à la voix, sans barrière de lecture ni d'écriture.": "Every screen, every alert and every answer is designed first for the herder. A smart assistant in local languages lets you use GETT GI by voice, with no reading or writing barrier.",
+        "Sérère": "Serer",
+        // Collier
+        "// COLLIER INTELLIGENT": "// SMART COLLAR",
+        "Un collier pensé": "A collar designed",
+        "pour le terrain.": "for the field.",
+        "GPS intégré": "Built-in GPS",
+        "Alerte de zone": "Zone alerts",
+        "Boîtier robuste": "Rugged casing",
+        "Autonomie longue": "Long battery life",
+        "Transmission adaptée au terrain": "Field-ready transmission",
+        "Confort animal": "Animal comfort",
+        "Le collier intelligent GETT GI est pensé pour les conditions d'élevage au Sénégal : robuste, confortable pour l'animal, adapté aux longues distances et conçu pour transmettre les informations utiles au suivi du troupeau.": "The GETT GI smart collar is designed for livestock-farming conditions in Senegal: rugged, comfortable for the animal, suited to long distances and built to transmit the information that matters for herd monitoring.",
+        // Application
+        "// APPLICATION MOBILE": "// MOBILE APP",
+        "L'application éleveur est l'outil de gestion quotidien du cheptel : identifier chaque animal, suivre sa santé et ses mouvements, localiser le troupeau et recevoir les alertes de vol. Pensée pour le terrain, elle reste simple à utiliser et fonctionne même sans réseau, avec synchronisation automatique dès qu'une connexion revient.": "The herder app is the everyday tool for managing the herd: identify each animal, track its health and movements, locate the herd and receive theft alerts. Built for the field, it stays simple to use and works even without a network, syncing automatically as soon as a connection returns.",
+        "Identité de l'animal": "Animal identity",
+        "Puce RFID et QR code pour identifier chaque animal et prouver la propriété.": "RFID chip and QR code to identify each animal and prove ownership.",
+        "Gestion du cheptel": "Herd management",
+        "Effectifs, entrées/sorties et suivi des mouvements.": "Headcount, entries/exits and movement tracking.",
+        "Fiche animale": "Animal record",
+        "Santé, vaccins, reproduction et historique.": "Health, vaccines, breeding and history.",
+        "Localisation & alertes": "Location & alerts",
+        "Position temps réel et alertes de vol.": "Real-time location and theft alerts.",
+        "Mode hors-ligne": "Offline mode",
+        "Saisie sans réseau et synchronisation.": "Offline data entry and syncing.",
+        // Coopérative
+        "// APPLICATION COOPÉRATIVE": "// COOPERATIVE APP",
+        "Application coopérative": "Cooperative app",
+        "L'application coopérative connecte la structure (coopérative ou organisation) à l'ensemble de ses éleveurs. Elle offre une vue complète du cheptel de tous les membres, centralise la traçabilité et la gestion, et transforme ces données fiables en passerelle vers le financement et l'assurance.": "The cooperative app connects the organization (a cooperative or other body) to all of its herders. It gives a complete view of every member's herd, centralizes traceability and management, and turns this reliable data into a gateway to financing and insurance.",
+        "Réseau d'éleveurs": "Herder network",
+        "Tous les membres connectés avec leur cheptel au même endroit.": "Every member and their herd connected in one place.",
+        "Vue d'ensemble": "Overview",
+        "Effectifs consolidés et indicateurs clés de tout le réseau.": "Consolidated headcount and key indicators across the whole network.",
+        "Traçabilité": "Traceability",
+        "Origine et parcours des animaux, du pâturage à la collecte.": "Origin and journey of the animals, from pasture to collection.",
+        "Suivi sanitaire": "Health monitoring",
+        "Campagnes de vaccination et alertes à l'échelle du réseau.": "Vaccination campaigns and alerts across the network.",
+        "Gestion collecte": "Collection management",
+        "Organisation de la collecte et suivi de production par éleveur.": "Collection planning and production tracking per herder.",
+        "Passerelle finance": "Finance gateway",
+        "Données fiables facilitant l'accès au crédit et à l'assurance.": "Reliable data that eases access to credit and insurance.",
+        // Modèle économique
+        "// Modèle économique": "// Business model",
+        "Une stratégie portée": "A strategy driven",
+        "par les coopératives.": "by cooperatives.",
+        "GETT GI mise sur les coopératives comme canal principal. Cette approche permet de répartir les coûts, d'équiper plus vite le terrain et de structurer l'adoption à grande échelle.": "GETT GI relies on cooperatives as its main channel. This approach spreads the costs, equips the field faster and structures adoption at scale.",
+        "Équipement mutualisé": "Shared equipment",
+        "Kit de départ progressif": "Progressive starter kit",
+        "Plateforme par abonnement": "Subscription platform",
+        "Suivi, alertes et gestion récurrente": "Recurring tracking, alerts and management",
+        "Extension à grande échelle": "Large-scale rollout",
+        "Unions, programmes et institutions": "Unions, programs and institutions",
+        "Un kit de départ permet d'équiper progressivement les animaux stratégiques sans imposer un coût trop élevé à chaque éleveur.": "A starter kit makes it possible to gradually equip the key animals without placing too high a cost on each herder.",
+        "Les coopératives accèdent au suivi, aux alertes et à la gestion du cheptel via un abonnement récurrent.": "Cooperatives gain access to tracking, alerts and herd management through a recurring subscription.",
+        "Le modèle s'adapte ensuite aux unions, programmes, partenaires et institutions qui souhaitent déployer la solution plus largement.": "The model then adapts to the unions, programs, partners and institutions that want to deploy the solution more widely.",
+        "Le passage par les coopératives rend la solution plus accessible, plus structurée et plus scalable.": "Going through cooperatives makes the solution more accessible, more structured and more scalable.",
+        // Impact
+        "// Notre impact": "// Our impact",
+        "Plus qu'une technologie,": "More than a technology,",
+        "un levier de développement.": "a lever for development.",
+        "En sécurisant et en structurant le cheptel, GETT GI agit bien au-delà du suivi : accès au financement, souveraineté alimentaire, inclusion des femmes et des jeunes, et ancrage d'une filière vitale dans une solution conçue localement.": "By securing and structuring the herd, GETT GI reaches well beyond tracking: access to financing, food sovereignty, inclusion of women and youth, and rooting a vital sector in a homegrown solution.",
+        "18,4 M": "18.4 M",
+        "têtes de bétail à l'échelle du pays.": "head of livestock nationwide.",
+        "38,3 %": "38.3 %",
+        "du PIB agricole porté par l'élevage.": "of agricultural GDP driven by livestock.",
+        "≈ 2 Md": "≈ 2 Bn",
+        "FCFA de pertes annuelles liées au vol.": "FCFA in annual losses to theft.",
+        "des ménages agricoles pratiquent l'élevage.": "of farming households are engaged in livestock farming.",
+        "Inclusion financière": "Financial inclusion",
+        "Identifiés et traçables, les animaux deviennent des actifs reconnus, qui ouvrent l'accès au crédit et à l'assurance.": "Identified and traceable, animals become recognized assets that open access to credit and insurance.",
+        "Souveraineté alimentaire": "Food sovereignty",
+        "Des produits traçables, du pâturage à l'assiette, pour renforcer une filière stratégique.": "Traceable products, from pasture to plate, to strengthen a strategic sector.",
+        "Inclusion des femmes et des jeunes": "Inclusion of women and youth",
+        "Des outils simples et accessibles, au cœur des chaînes de valeur de l'élevage.": "Simple, accessible tools at the heart of livestock value chains.",
+        "Une solution pensée au Sénégal, pour répondre aux réalités de toute l'Afrique.": "A solution designed in Senegal to meet realities across Africa.",
+        // Footer
+        "L'infrastructure d'identité et de traçabilité du bétail en Afrique.": "The identity and traceability infrastructure for livestock in Africa.",
+        "Identifier, gérer et protéger chaque animal, et ouvrir l'accès au financement.": "Identify, manage and protect every animal, and open access to financing.",
+        "Dakar, Sénégal": "Dakar, Senegal",
+        "Réseaux": "Social"
+    };
+
+    function normalize(s) {
+        return s.replace(/’/g, "'").replace(/‑/g, '-').replace(/\s+/g, ' ').trim();
+    }
+
+    // Collect translatable text nodes (skip script/style/empty)
+    const i18nNodes = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode(n) {
+            const p = n.parentNode;
+            if (!p) return NodeFilter.FILTER_REJECT;
+            const tag = p.nodeName;
+            if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
+            if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+        }
+    });
+    let _tn;
+    while ((_tn = walker.nextNode())) {
+        const fr = _tn.nodeValue;
+        i18nNodes.push({
+            node: _tn,
+            fr: fr,
+            lead: fr.match(/^\s*/)[0],
+            trail: fr.match(/\s*$/)[0],
+            key: normalize(fr)
+        });
+    }
+
+    const TITLE_FR = document.title;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const DESC_FR = metaDesc ? metaDesc.getAttribute('content') : '';
+
+    let currentLang = 'fr';
+
+    // Locale-aware counter formatting
+    function fmtCounter(el, value) {
+        const target = parseFloat(el.dataset.target);
+        const prefix = el.dataset.prefix || '';
+        const isFloat = target % 1 !== 0;
+        let numStr;
+        if (isFloat) {
+            numStr = value.toFixed(1);
+            if (currentLang !== 'en') numStr = numStr.replace('.', ',');
+        } else {
+            numStr = Math.floor(value).toLocaleString(currentLang === 'en' ? 'en-US' : 'fr-FR');
+        }
+        let suffix = (el.dataset.suffix || '').trim();
+        if (currentLang === 'en') suffix = suffix.replace('Md FCFA', 'Bn FCFA');
+        const suffixHtml = suffix
+            ? '<span class="text-2xl md:text-3xl lg:text-4xl text-white/70 ml-1 tracking-normal font-light">' + suffix + '</span>'
+            : '';
+        return prefix + numStr + suffixHtml;
+    }
+
+    function renderCounters() {
+        document.querySelectorAll('.counter').forEach(el => {
+            if (el.dataset.done === '1') el.innerHTML = fmtCounter(el, parseFloat(el.dataset.target));
+        });
+    }
+
+    function applyLang(lang) {
+        const en = lang === 'en';
+        currentLang = lang;
+        i18nNodes.forEach(o => {
+            if (en && I18N_EN[o.key] !== undefined) {
+                o.node.nodeValue = o.lead + I18N_EN[o.key] + o.trail;
+            } else {
+                o.node.nodeValue = o.fr;
+            }
+        });
+        document.documentElement.lang = lang;
+        document.title = en ? TITLE_EN : TITLE_FR;
+        if (metaDesc) metaDesc.setAttribute('content', en ? DESC_EN : DESC_FR);
+        document.querySelectorAll('.lang-btn').forEach(b => {
+            b.classList.toggle('is-active', b.dataset.lang === lang);
+        });
+        renderCounters();
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    }
+
+    // Initial language: stored choice → else browser language
+    let initial = null;
+    try { initial = localStorage.getItem(LANG_KEY); } catch (e) {}
+    if (initial !== 'fr' && initial !== 'en') {
+        initial = (navigator.language || '').toLowerCase().indexOf('en') === 0 ? 'en' : 'fr';
+    }
+    applyLang(initial);
+
+    document.querySelectorAll('.lang-btn').forEach(b => {
+        b.addEventListener('click', () => applyLang(b.dataset.lang));
+    });
+
     // Hero parallax background
     const heroBg = document.getElementById('heroBg');
     if (heroBg) {
@@ -1571,12 +1848,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.reveal-item').forEach(el => revealObserver.observe(el));
 
-    // Counter animation
+    // Counter animation (locale-aware via fmtCounter)
     function animateCounter(el) {
         const target = parseFloat(el.dataset.target);
-        const suffix = el.dataset.suffix || '';
-        const prefix = el.dataset.prefix || '';
-        const isFloat = target % 1 !== 0;
         const duration = 2000;
         const start = performance.now();
 
@@ -1584,16 +1858,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const elapsed = now - start;
             const progress = Math.min(elapsed / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
-            const current = target * eased;
-
-            const formattedSuffix = suffix ? `<span class="text-2xl md:text-3xl lg:text-4xl text-white/70 ml-1 tracking-normal font-light">${suffix.trim()}</span>` : '';
-            if (isFloat) {
-                el.innerHTML = prefix + current.toFixed(1).replace('.', ',') + formattedSuffix;
-            } else {
-                el.innerHTML = prefix + Math.floor(current).toLocaleString('fr-FR') + formattedSuffix;
-            }
-
+            el.innerHTML = fmtCounter(el, target * eased);
             if (progress < 1) requestAnimationFrame(update);
+            else el.dataset.done = '1';
         }
         requestAnimationFrame(update);
     }

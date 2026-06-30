@@ -45,8 +45,8 @@ A React/Vite reference template is available at `~/Downloads/AI-Intelligence-Lan
 
 ## Content & Language
 
-- Primary language is **French**. All user-facing copy should be in French.
-- The git history shows a removed i18n system (FR/EN). Current state is French-only.
+- Primary/source language is **French**. Author all new copy in French.
+- An FR/EN language switcher lives inline in [index.html](index.html): a `FR / EN` toggle in the navbar (and mobile menu) translates the whole page client-side. French is the source; English lives in an `I18N_EN` dictionary in the inline `<script>`, keyed by normalized French text-node strings. A `TreeWalker` swaps only text nodes (markup/SVG/animations untouched). First visit auto-detects `navigator.language`; the choice persists in `localStorage` under `gettgi-lang`. **When you add or change French copy, add the matching `I18N_EN` entry** (key = the new French string).
 - Copy source of truth: [contenu.md](contenu.md). Statistics and key figures referenced in the page come from this file.
 - Contact: Abdoulaye Ly, +221 77 777 85 76, theabdoulay@gmail.com
 - CTA links use WhatsApp (`wa.me/221777778576`) for demo requests and `mailto:` for general contact.
