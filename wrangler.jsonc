@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Nom du Worker Cloudflare (doit être identique au nom du projet dans le dashboard)
+  "name": "gettgi",
+  "compatibility_date": "2026-10-01",
+  // Site 100 % statique : pas de code Worker, seulement des assets servis depuis la racine du dépôt.
+  // Les fichiers réellement publiés sont filtrés par .assetsignore (liste blanche).
+  "assets": {
+    "directory": "./"
+  },
+  // Domaine personnalisé : Cloudflare crée automatiquement les enregistrements DNS et les certificats SSL.
+  "routes": [
+    { "pattern": "gettgi.com", "custom_domain": true },
+    { "pattern": "www.gettgi.com", "custom_domain": true }
+  ]
+}

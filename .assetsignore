@@ -1,0 +1,13 @@
+# Liste blanche : on ignore tout, puis on ré-autorise uniquement ce que la page utilise.
+# (Évite de publier contenu.md, update.py, brochures, docs/, etc.)
+*
+
+!index.html
+!favicon.png
+!BEYNO.otf
+!BEYNO.ttf
+!Vidéo collier.mp4
+!kling_20260628_VIDEO_fais_moi_c_2400_0.mp4
+
+!img_gettgi/
+!img_gettgi/**
