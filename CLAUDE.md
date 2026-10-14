@@ -39,6 +39,15 @@ python -m http.server 8000
 npx serve .
 ```
 
+## Deployment
+
+Hosted on **Cloudflare Workers (static assets)** at `gettgi.com` and `www.gettgi.com` (zone in the Cloudflare account).
+
+- [wrangler.jsonc](wrangler.jsonc) — Worker `gettgi`, assets served from the repo root, custom domains declared under `routes` (Cloudflare creates the DNS records + SSL certs on deploy; do not create manual A/CNAME records for these hostnames, they would conflict).
+- [.assetsignore](.assetsignore) — **allowlist** of published files. Anything not listed (`contenu.md`, `update.py`, brochures, `docs/`, …) is NOT published. **When the page starts referencing a new local file (image, video, font…), add a `!path` line there**, otherwise it will 404 in production.
+- Deploy: Workers Builds (Git integration) runs `npx wrangler deploy` on every push to `main`. Manual deploy: `npx wrangler deploy` (needs a Cloudflare login/API token). Validate config without deploying: `npx wrangler deploy --dry-run`.
+- The Worker name in the Cloudflare dashboard must stay equal to `name` in `wrangler.jsonc`.
+
 ### Reference Template
 
 A React/Vite reference template is available at `~/Downloads/AI-Intelligence-Landing-Page-Template/` for design inspiration. It uses a different stack (React + Vite + Tailwind config) — do not copy its architecture, only reference its design patterns.
